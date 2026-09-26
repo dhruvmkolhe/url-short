@@ -1,0 +1,87 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
+}
+
+model User {
+  id           String   @id @default(uuid())
+  email        String   @unique
+  passwordHash String
+  createdAt    DateTime @default(now())
+  links        Link[]
+  apiKeys      ApiKey[]
+  webhooks     Webhook[]
+
+  @@map("users")
+}
+
+model ApiKey {
+  id        String   @id @default(uuid())
+  name      String
+  key       String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@map("api_keys")
+}
+
+model Webhook {
+  id        String   @id @default(uuid())
+  url       String
+  events    String   @default("link.clicked,link.updated,link.expired")
+  secret    String?
+  isEnabled Boolean  @default(true)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@map("webhooks")
+}
+
+model Link {
+  id             String      @id @default(uuid())
+  code           String      @unique // Base62 code or custom alias
+  longUrl        String
+  passwordHash   String?     // Optional password protection
+  expiresAt      DateTime?
+  maxClicks      Int?        // Optional Max Clicks limit (TTL)
+  redirectType   String      @default("302") // 301 Permanent or 302 Temporary
+  customDomain   String?     // Custom branded domain (e.g. go.yourbrand.com)
+  requirePreview Boolean     @default(false) // Link Preview Page before redirect
+  reportCount    Int         @default(0) // Abuse report counter
+  isFlagged      Boolean     @default(false) // Abuse flag status
+  ipAllowlist    String?     // Comma-separated CIDRs/IPs: only these IPs can visit
+  ipBlocklist    String?     // Comma-separated CIDRs/IPs: these IPs are blocked
+  isEnabled      Boolean     @default(true)
+  userId         String?     // Nullable for guest creators
+  user           User?       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+  analytics      Analytic[]
+
+  @@index([code])
+  @@map("links")
+}
+
+model Analytic {
+  id        String   @id @default(uuid())
+  linkId    String
+  link      Link     @relation(fields: [linkId], references: [id], onDelete: Cascade)
+  clickedAt DateTime @default(now())
+  ip        String
+  country   String   @default("Unknown")
+  city      String   @default("Unknown")
+  browser   String   @default("Unknown")
+  os        String   @default("Unknown")
+  device    String   @default("Desktop")
+  referrer  String   @default("Direct")
+
+  @@index([linkId])
+  @@map("analytics")
+}

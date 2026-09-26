@@ -1,0 +1,12 @@
+# https://www.robotstxt.org/robotstxt.html
+User-agent: *
+Allow: /
+Allow: /dashboard
+Allow: /developer
+Allow: /privacy
+Allow: /terms
+
+Disallow: /api/
+Disallow: /analytics/
+
+Sitemap: http://localhost:3000/sitemap.xml

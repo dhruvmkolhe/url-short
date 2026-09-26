@@ -1,0 +1,21 @@
+# Common URL Shortener & Analytics Platform
+> High-performance link management, dynamic QR code creation, geolocation analytics, secret API key generation, and event webhook subscriptions.
+
+## Core Platform Capabilities
+- **URL Shortening & Custom Aliases:** Instant short URL creation with custom vanity codes, base62 encoding, and HTTP 301/302 redirects.
+- **UTM Parameter Builder:** Build campaign tracking parameters (source, medium, campaign, term, content) directly into short links.
+- **Security & Expiration:** Password-protected short links, click limit caps, expiration timestamps, and preview warning screens.
+- **Real-Time Analytics:** Track click volume, geographic country/city maps, browser breakdown, OS, device types, and referrer headers.
+- **Developer Platform & REST API:** Programmatic link management using secret `X-API-Key` headers.
+- **Webhooks:** Real-time HTTP POST notifications on `link.clicked`, `link.updated`, and `link.expired` events.
+
+## API Documentation Quickstart
+- `POST /api/links/shorten`: Create short link (Headers: `X-API-Key: <key>`, Body: `{ "longUrl": "https://example.com", "customAlias": "my-code" }`)
+- `GET /api/links`: List account links
+- `GET /api/links/:id/analytics`: Detailed click analytics payload
+
+## Links
+- Website: http://localhost:3000/
+- Developer Console: http://localhost:3000/developer
+- Privacy Policy: http://localhost:3000/privacy
+- Terms of Service: http://localhost:3000/terms
